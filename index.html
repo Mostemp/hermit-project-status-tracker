@@ -1739,127 +1739,1190 @@
       `;
     }
 
-    // --- CSV EXPORT FUNCTION ---
+    // --- CSV EXPORT FUNCTION (EXACT MATCH TO ORIGINAL SPREADSHEET) ---
+    const ORIGINAL_CSV_TEMPLATE = [
+  [
+    "",
+    "Hermit Projects Tracking ",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Company Name",
+    "",
+    "",
+    "",
+    "",
+    "Start Date",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Hermit Sustainability Advisory",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Projects",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Deliverables",
+    "",
+    "Cost / Hours",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Status",
+    "Priority",
+    "Proposed Project + Task Titles",
+    "Task Description",
+    "Task Owner",
+    "Start Date",
+    "End Date",
+    "# of Days",
+    "Deliverable",
+    "% Complete",
+    "Fixed Cost",
+    "Est. Hours",
+    "Actual Hours"
+  ],
+  [
+    "",
+    "",
+    "High",
+    "TD Energy FSPV",
+    "",
+    " ",
+    "7/1/2025",
+    "11/1/2026",
+    349,
+    "",
+    0.47428571428571425,
+    0,
+    6528,
+    0
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Client Engagement",
+    "",
+    "Eng Murove",
+    "7/1/2025",
+    "7/3/2025",
+    3,
+    "",
+    0.9,
+    0,
+    72,
+    ""
+  ],
+  [
+    "",
+    "Complete",
+    "",
+    "Site Assessment",
+    "",
+    "Hermit Team",
+    "7/2/2025",
+    "7/4/2025",
+    3,
+    "",
+    1,
+    0,
+    72,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Feasibility Study",
+    "",
+    "Hermit Team",
+    "7/3/2025",
+    "7/5/2025",
+    2,
+    "",
+    0.5,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Needs Review",
+    "",
+    "Stakeholder Mapping",
+    "",
+    "Eng Murove",
+    "7/4/2025",
+    "7/6/2025",
+    1,
+    "",
+    0.02,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Proposal Development",
+    "",
+    "Mr Tembo",
+    "7/5/2025",
+    "7/7/2025",
+    1,
+    "",
+    0.4,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Proposal Submission & Approval",
+    "",
+    "Eng Murove",
+    "7/6/2025",
+    "7/8/2025",
+    2,
+    "",
+    0.5,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Project Implementation",
+    "",
+    "TD Energy",
+    "11/1/2025",
+    "11/1/2026",
+    260,
+    "",
+    0,
+    0,
+    6240,
+    ""
+  ],
+  [
+    "",
+    "",
+    "High",
+    "Ecobank & Net Metering ",
+    "",
+    "",
+    "6/22/2025",
+    "6/29/2025",
+    5,
+    "",
+    0.4428571428571429,
+    0,
+    240,
+    0
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Client Engagement",
+    "",
+    "Eng Murove",
+    "6/22/2025",
+    "6/23/2025",
+    1,
+    "",
+    0.6,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Site Assessment",
+    "",
+    "",
+    "6/23/2025",
+    "6/24/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Feasibility Study",
+    "",
+    "Team",
+    "6/24/2025",
+    "6/25/2025",
+    2,
+    "",
+    0.9,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Stakeholder Mapping",
+    "",
+    "Eng Murove",
+    "6/25/2025",
+    "6/26/2025",
+    2,
+    "",
+    0.3,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Proposal Development",
+    "",
+    "Team",
+    "6/26/2025",
+    "6/27/2025",
+    2,
+    "",
+    0.7,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Proposal Submission & Approval",
+    "",
+    "Eng Murove",
+    "6/27/2025",
+    "6/28/2025",
+    1,
+    "",
+    0.6,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Project Implementation",
+    "",
+    "Ecobank",
+    "6/28/2025",
+    "6/29/2025",
+    0,
+    "",
+    0,
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "High",
+    "BESS Energy HUB",
+    "",
+    "",
+    "6/22/2025",
+    "6/29/2025",
+    5,
+    "",
+    0.20428571428571426,
+    0,
+    240,
+    0
+  ],
+  [
+    "",
+    "On Hold",
+    "",
+    "Client Engagement",
+    "",
+    "",
+    "6/22/2025",
+    "6/23/2025",
+    1,
+    "",
+    0.33,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Site Assessment",
+    "",
+    "",
+    "6/23/2025",
+    "6/24/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Feasibility Study",
+    "",
+    "",
+    "6/24/2025",
+    "6/25/2025",
+    2,
+    "",
+    0.6,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Stakeholder Mapping",
+    "",
+    "",
+    "6/25/2025",
+    "6/26/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Proposal Development",
+    "",
+    "",
+    "6/26/2025",
+    "6/27/2025",
+    2,
+    "",
+    0.5,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Proposal Submission & Approval",
+    "",
+    "",
+    "6/27/2025",
+    "6/28/2025",
+    1,
+    "",
+    0,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Project Implementation",
+    "",
+    "",
+    "6/28/2025",
+    "6/29/2025",
+    0,
+    "",
+    0,
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "Low",
+    "Hermit BUI Coporation",
+    "",
+    "",
+    "6/22/2025",
+    "6/29/2025",
+    5,
+    "",
+    0.04285714285714286,
+    0,
+    240,
+    0
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Strategic Preparation",
+    "",
+    "",
+    "6/22/2025",
+    "6/23/2025",
+    1,
+    "",
+    0.3,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Initial Engagement",
+    "",
+    "",
+    "6/23/2025",
+    "6/24/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Proposal Development",
+    "",
+    "",
+    "6/24/2025",
+    "6/25/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Formalization",
+    "",
+    "",
+    "6/25/2025",
+    "6/26/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Launch & Implementation",
+    "",
+    "",
+    "6/26/2025",
+    "6/27/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Review & Expansion",
+    "",
+    "",
+    "6/27/2025",
+    "6/28/2025",
+    1,
+    "",
+    0,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Project Implementation",
+    "",
+    "",
+    "6/28/2025",
+    "6/29/2025",
+    0,
+    "",
+    0,
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "Low",
+    "Osborne Dam FSPV",
+    "",
+    "",
+    "6/22/2025",
+    "6/29/2025",
+    5,
+    "",
+    0.2857142857142857,
+    0,
+    240,
+    0
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Client Engagement",
+    "",
+    "",
+    "6/22/2025",
+    "6/23/2025",
+    1,
+    "",
+    0.2,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Complete",
+    "",
+    "Site Assessment",
+    "",
+    "",
+    "6/23/2025",
+    "6/24/2025",
+    2,
+    "",
+    1,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Feasibility Study",
+    "",
+    "",
+    "6/24/2025",
+    "6/25/2025",
+    2,
+    "",
+    0.5,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Stakeholder Mapping",
+    "",
+    "",
+    "6/25/2025",
+    "6/26/2025",
+    2,
+    "",
+    0.2,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Proposal Development",
+    "",
+    "",
+    "6/26/2025",
+    "6/27/2025",
+    2,
+    "",
+    0.1,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Proposal Submission & Approval",
+    "",
+    "",
+    "6/27/2025",
+    "6/28/2025",
+    1,
+    "",
+    0,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Overdue",
+    "",
+    "Project Implementation",
+    "",
+    "",
+    "6/28/2025",
+    "6/29/2025",
+    0,
+    "",
+    0,
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "Medium",
+    "National Energy Compact",
+    "",
+    "",
+    "3/16/2025",
+    "1/1/2030",
+    1252,
+    "",
+    0.75,
+    0,
+    30096,
+    0
+  ],
+  [
+    "",
+    "Complete",
+    "",
+    "Strategic Planning & Alignment",
+    "",
+    "",
+    "3/16/2025",
+    "3/20/2025",
+    4,
+    "",
+    1,
+    0,
+    96,
+    ""
+  ],
+  [
+    "",
+    "Complete",
+    "",
+    "Commitment Design",
+    "",
+    "",
+    "3/20/2025",
+    "3/31/2025",
+    8,
+    "",
+    1,
+    0,
+    192,
+    ""
+  ],
+  [
+    "",
+    "Approved",
+    "",
+    "Documentation & Submission",
+    "",
+    "",
+    "4/1/2025",
+    "9/1/2025",
+    110,
+    "",
+    1,
+    0,
+    2640,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Implementation & Monitoring",
+    "",
+    "",
+    "9/1/2025",
+    "1/1/2030",
+    1132,
+    "",
+    0,
+    0,
+    27168,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "",
+    "Medium",
+    "Media Monitoring",
+    "",
+    "",
+    "6/22/2025",
+    "6/29/2025",
+    5,
+    "",
+    0.18857142857142858,
+    0,
+    240,
+    0
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Strategic Content Planning",
+    "",
+    "",
+    "6/22/2025",
+    "6/23/2025",
+    1,
+    "",
+    0.3,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Build Digital Infrastructure",
+    "",
+    "",
+    "6/23/2025",
+    "6/24/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "In Progress",
+    "",
+    "Content Creation & Workflow",
+    "",
+    "",
+    "6/24/2025",
+    "6/25/2025",
+    2,
+    "",
+    1,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "Not Started",
+    "",
+    "Publishing on Social Media",
+    "",
+    "",
+    "6/25/2025",
+    "6/26/2025",
+    2,
+    "",
+    0.02,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Publishing in Traditional Media",
+    "",
+    "",
+    "6/26/2025",
+    "6/27/2025",
+    2,
+    "",
+    0,
+    0,
+    48,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Compliance & Branding",
+    "",
+    "",
+    "6/27/2025",
+    "6/28/2025",
+    1,
+    "",
+    0,
+    0,
+    24,
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Feedback & Growth",
+    "",
+    "",
+    "6/28/2025",
+    "6/29/2025",
+    0,
+    "",
+    0,
+    0,
+    0,
+    ""
+  ],
+  [
+    "",
+    "DROPDOWN KEYS",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Priority",
+    "",
+    "Status",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "High",
+    "",
+    "Complete",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Medium",
+    "",
+    "In Progress",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "Low",
+    "",
+    "Overdue",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Not Started",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "On Hold",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Needs Review",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "Approved",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
+];
+
     function exportCSV() {
-      // Helper function to escape CSV cell values
       const escapeCSV = (val) => {
         if (val === null || val === undefined) return "";
         let str = String(val);
-        if (str.includes(",") || str.includes("\"") || str.includes("\n") || str.includes("\r")) {
+        if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
           return '"' + str.replace(/"/g, '""') + '"';
         }
         return str;
       };
 
-      // Helper to compute date difference in days
-      const getDaysDiff = (start, end) => {
-        if (!start || !end) return "";
-        const s = new Date(start);
-        const e = new Date(end);
-        if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
-        const diffMs = e.getTime() - s.getTime();
-        return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
-      };
+      // Deep clone original template rows so it starts with the exact layout, dates, days, and hours
+      const rows = ORIGINAL_CSV_TEMPLATE.map(r => [...r]);
 
-      const rows = [];
-
-      // 1. Title & Company metadata headers
-      rows.push(["", "Hermit Projects Tracking", "", "", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "Company Name", "", "", "", "", "Start Date", "", "", "", "", "", "", ""]);
-      rows.push(["", "Hermit Sustainability Advisory", "", "", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
-
-      // 2. Section and Column headers
-      rows.push(["", "", "", "Projects", "", "", "", "", "", "Deliverables", "", "Cost / Hours", "", ""]);
-      rows.push([
-        "",
-        "Status",
-        "Priority",
-        "Proposed Project + Task Titles",
-        "Task Description",
-        "Task Owner",
-        "Start Date",
-        "End Date",
-        "# of Days",
-        "Deliverable",
-        "% Complete",
-        "Fixed Cost",
-        "Est. Hours",
-        "Actual Hours"
-      ]);
-
-      // 3. Project & Task Rows
+      // Overlay live updates (status, % complete, owner) from current PORTFOLIO_DATA
       PORTFOLIO_DATA.forEach(p => {
-        const pDays = getDaysDiff(p.startDate, p.targetDate);
-        const pPctVal = ((Number(p.completion) || 0) / 100);
+        const pName = (p.shortName || p.name || "").trim().toLowerCase();
+        
+        // Find matching project row in template
+        const pRowIdx = rows.findIndex(r => r[3] && String(r[3]).trim().toLowerCase() === pName && r[2]);
+        if (pRowIdx !== -1) {
+          if (p.completion !== undefined) {
+            rows[pRowIdx][10] = (Number(p.completion) / 100);
+          }
+        }
 
-        // Project Summary Header Row
-        rows.push([
-          "",
-          "",
-          p.priority || "",
-          p.shortName || p.name,
-          "",
-          p.lead || "",
-          p.startDate || "",
-          p.targetDate || "",
-          pDays,
-          "",
-          pPctVal,
-          0,
-          p.estHours !== undefined ? p.estHours : 0,
-          p.actualHours !== undefined ? p.actualHours : 0
-        ]);
-
-        // Task Rows under this Project
+        // Find matching task rows in template
         if (p.tasks && p.tasks.length > 0) {
           p.tasks.forEach(t => {
-            const taskPctVal = ((Number(t.pct) || 0) / 100);
-            const taskEnd = (t.due && t.due !== "Standing" && t.due !== "TBC" && !t.due.startsWith("Next")) ? t.due : (p.targetDate || "");
-            const taskStart = p.startDate || "";
-            const taskDays = getDaysDiff(taskStart, taskEnd);
-
-            rows.push([
-              "",
-              t.status || "",
-              "",
-              t.name,
-              "",
-              t.owner || "",
-              taskStart,
-              taskEnd,
-              taskDays,
-              "",
-              taskPctVal,
-              0,
-              "",
-              ""
-            ]);
+            const tName = (t.name || "").trim().toLowerCase();
+            const tRowIdx = rows.findIndex(r => r[3] && String(r[3]).trim().toLowerCase() === tName && !r[2]);
+            if (tRowIdx !== -1) {
+              if (t.status) rows[tRowIdx][1] = t.status;
+              if (t.pct !== undefined) rows[tRowIdx][10] = (Number(t.pct) / 100);
+              if (t.owner) rows[tRowIdx][5] = t.owner;
+            }
           });
         }
       });
 
-      // 4. Spacer rows
-      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
-      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
-      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
-
-      // 5. Reference Dropdown Keys
-      rows.push(["", "DROPDOWN KEYS", "", "", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "Priority", "", "Status", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "High", "", "Complete", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "Medium", "", "In Progress", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "Low", "", "Overdue", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "", "", "Not Started", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "", "", "On Hold", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "", "", "Needs Review", "", "", "", "", "", "", "", "", "", ""]);
-      rows.push(["", "", "", "Approved", "", "", "", "", "", "", "", "", "", ""]);
-
-      // Convert rows to CSV string
+      // Generate CSV string with Windows CRLF
       const csvContent = rows.map(r => r.map(cell => escapeCSV(cell)).join(",")).join("\r\n");
 
-      // Trigger file download
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      // Include UTF-8 BOM so Excel opens with correct character encoding and formatting
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
