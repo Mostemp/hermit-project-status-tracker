@@ -1741,20 +1741,133 @@
 
     // --- CSV EXPORT FUNCTION ---
     function exportCSV() {
-      let rows = [
-        ["Project ID", "Project Name", "Client", "Category", "Priority", "Health", "Completion %", "Deliverables Count"]
-      ];
+      // Helper function to escape CSV cell values
+      const escapeCSV = (val) => {
+        if (val === null || val === undefined) return "";
+        let str = String(val);
+        if (str.includes(",") || str.includes("\"") || str.includes("\n") || str.includes("\r")) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+
+      // Helper to compute date difference in days
+      const getDaysDiff = (start, end) => {
+        if (!start || !end) return "";
+        const s = new Date(start);
+        const e = new Date(end);
+        if (isNaN(s.getTime()) || isNaN(e.getTime())) return "";
+        const diffMs = e.getTime() - s.getTime();
+        return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+      };
+
+      const rows = [];
+
+      // 1. Title & Company metadata headers
+      rows.push(["", "Hermit Projects Tracking", "", "", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "Company Name", "", "", "", "", "Start Date", "", "", "", "", "", "", ""]);
+      rows.push(["", "Hermit Sustainability Advisory", "", "", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
+
+      // 2. Section and Column headers
+      rows.push(["", "", "", "Projects", "", "", "", "", "", "Deliverables", "", "Cost / Hours", "", ""]);
+      rows.push([
+        "",
+        "Status",
+        "Priority",
+        "Proposed Project + Task Titles",
+        "Task Description",
+        "Task Owner",
+        "Start Date",
+        "End Date",
+        "# of Days",
+        "Deliverable",
+        "% Complete",
+        "Fixed Cost",
+        "Est. Hours",
+        "Actual Hours"
+      ]);
+
+      // 3. Project & Task Rows
       PORTFOLIO_DATA.forEach(p => {
-        rows.push([p.id, `"${p.name}"`, `"${p.client}"`, p.category, p.priority, p.health, p.completion, p.tasks.length]);
+        const pDays = getDaysDiff(p.startDate, p.targetDate);
+        const pPctVal = ((Number(p.completion) || 0) / 100);
+
+        // Project Summary Header Row
+        rows.push([
+          "",
+          "",
+          p.priority || "",
+          p.shortName || p.name,
+          "",
+          p.lead || "",
+          p.startDate || "",
+          p.targetDate || "",
+          pDays,
+          "",
+          pPctVal,
+          0,
+          p.estHours !== undefined ? p.estHours : 0,
+          p.actualHours !== undefined ? p.actualHours : 0
+        ]);
+
+        // Task Rows under this Project
+        if (p.tasks && p.tasks.length > 0) {
+          p.tasks.forEach(t => {
+            const taskPctVal = ((Number(t.pct) || 0) / 100);
+            const taskEnd = (t.due && t.due !== "Standing" && t.due !== "TBC" && !t.due.startsWith("Next")) ? t.due : (p.targetDate || "");
+            const taskStart = p.startDate || "";
+            const taskDays = getDaysDiff(taskStart, taskEnd);
+
+            rows.push([
+              "",
+              t.status || "",
+              "",
+              t.name,
+              "",
+              t.owner || "",
+              taskStart,
+              taskEnd,
+              taskDays,
+              "",
+              taskPctVal,
+              0,
+              "",
+              ""
+            ]);
+          });
+        }
       });
-      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-      const encodedUri = encodeURI(csvContent);
+
+      // 4. Spacer rows
+      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
+      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
+      rows.push(["", "", "", "", "", "", "", "", "", "", "", 0, 0, ""]);
+
+      // 5. Reference Dropdown Keys
+      rows.push(["", "DROPDOWN KEYS", "", "", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "Priority", "", "Status", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "High", "", "Complete", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "Medium", "", "In Progress", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "Low", "", "Overdue", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "", "", "Not Started", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "", "", "On Hold", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "", "", "Needs Review", "", "", "", "", "", "", "", "", "", ""]);
+      rows.push(["", "", "", "Approved", "", "", "", "", "", "", "", "", "", ""]);
+
+      // Convert rows to CSV string
+      const csvContent = rows.map(r => r.map(cell => escapeCSV(cell)).join(",")).join("\r\n");
+
+      // Trigger file download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "Hermit_Projects_Master_Export.csv");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "Hermit_Projects_Tracking.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
 
     // --- MAIN RENDER ROUTER ---
