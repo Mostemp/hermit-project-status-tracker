@@ -1,6 +1,6 @@
 # Hermit Sustainability Advisory — Executive PMO Portal
 
-An interactive, browser-based Project Management Office (PMO) dashboard designed for **Hermit Sustainability Advisory**. It tracks clean-energy, storage, policy compacts, and capital mobilization mandates across Zimbabwe and the Southern African region.
+An interactive, browser-based Project Management Office (PMO) dashboard designed for **Hermit Advisory**. It tracks clean-energy, storage, policy compacts, and capital mobilization mandates across Zimbabwe and the Southern African region.
 
 ## 🚀 Key Features
 
