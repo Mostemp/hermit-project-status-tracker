@@ -192,9 +192,13 @@
           <span>Print / PDF</span>
         </button>
 
-        <button onclick="exportCSV()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition-all">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Export CSV</span>
+        <button onclick="exportExcelXML()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition-all" title="Export Executive Excel Spreadsheet (.xls)">
+          <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+          <span>Export Excel</span>
+        </button>
+        <button onclick="exportCSV()" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all" title="Export Raw CSV">
+          <i data-lucide="download" class="w-3 h-3"></i>
+          <span class="hidden sm:inline">CSV</span>
         </button>
       </div>
     </header>
@@ -2951,7 +2955,538 @@
   ]
 ];
 
-    function exportCSV() {
+
+function exportExcelXML() {
+  const escapeXML = (val) => {
+    if (val === null || val === undefined) return "";
+    return String(val)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  };
+
+  // Clone original template rows
+  const rows = ORIGINAL_CSV_TEMPLATE.map(r => [...r]);
+
+  // Sync live edits from PORTFOLIO_DATA into matching rows
+  PORTFOLIO_DATA.forEach(p => {
+    const pName = (p.shortName || p.name || "").trim().toLowerCase();
+    const pRowIdx = rows.findIndex(r => r[3] && String(r[3]).trim().toLowerCase() === pName && r[2]);
+    if (pRowIdx !== -1) {
+      if (p.completion !== undefined) {
+        rows[pRowIdx][10] = (Number(p.completion) / 100);
+      }
+    }
+
+    if (p.tasks && p.tasks.length > 0) {
+      p.tasks.forEach(t => {
+        const tName = (t.name || "").trim().toLowerCase();
+        const tRowIdx = rows.findIndex(r => r[3] && String(r[3]).trim().toLowerCase() === tName && !r[2]);
+        if (tRowIdx !== -1) {
+          if (t.status) rows[tRowIdx][1] = t.status;
+          if (t.pct !== undefined) rows[tRowIdx][10] = (Number(t.pct) / 100);
+          if (t.owner) rows[tRowIdx][5] = t.owner;
+        }
+      });
+    }
+  });
+
+  // Calculate live portfolio summary metrics for the KPI block
+  let totalProjects = PORTFOLIO_DATA.length;
+  let allTasks = [];
+  PORTFOLIO_DATA.forEach(p => allTasks.push(...p.tasks));
+  let totalTasks = allTasks.length;
+  let completedTasks = allTasks.filter(t => t.status === "Complete" || t.status === "Approved").length;
+  let overdueTasks = allTasks.filter(t => t.status === "Overdue").length;
+  let totalEstHours = PORTFOLIO_DATA.reduce((sum, p) => sum + (Number(p.estHours) || 0), 0);
+  let totalActualHours = PORTFOLIO_DATA.reduce((sum, p) => sum + (Number(p.actualHours) || 0), 0);
+
+  // Column definitions with explicit widths in points so no text is clipped
+  const colWidths = [
+    25,   // Col 1: Empty spacer margin
+    120,  // Col 2: Status
+    90,   // Col 3: Priority
+    260,  // Col 4: Proposed Project + Task Titles
+    180,  // Col 5: Task Description
+    140,  // Col 6: Task Owner
+    100,  // Col 7: Start Date
+    100,  // Col 8: End Date
+    85,   // Col 9: # of Days
+    120,  // Col 10: Deliverable
+    100,  // Col 11: % Complete
+    100,  // Col 12: Fixed Cost
+    95,   // Col 13: Est. Hours
+    95    // Col 14: Actual Hours
+  ];
+
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\r\n';
+  xml += '<?mso-application progid="Excel.Sheet"?>\r\n';
+  xml += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\r\n';
+  xml += ' xmlns:o="urn:schemas-microsoft-com:office:office"\r\n';
+  xml += ' xmlns:x="urn:schemas-microsoft-com:office:excel"\r\n';
+  xml += ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"\r\n';
+  xml += ' xmlns:html="http://www.w3.org/TR/REC-html40">\r\n';
+
+  // Document Properties
+  xml += ' <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">\r\n';
+  xml += '  <Title>Hermit Project Status Tracker</Title>\r\n';
+  xml += '  <Author>Hermit Sustainability Advisory</Author>\r\n';
+  xml += '  <Created>' + new Date().toISOString() + '</Created>\r\n';
+  xml += ' </DocumentProperties>\r\n';
+
+  // Styles collection
+  xml += ' <Styles>\r\n';
+  xml += '  <Style ss:ID="Default" ss:Name="Normal">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders/>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#1E293B"/>\r\n';
+  xml += '   <Interior/>\r\n';
+  xml += '   <NumberFormat/>\r\n';
+  xml += '   <Protection/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Header Title
+  xml += '  <Style ss:ID="sTitle">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="16" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Subtitle / Company
+  xml += '  <Style ss:ID="sSubtitle">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#047857"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sLabel">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#64748B"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Category Header (Row 5: Projects, Deliverables, Cost / Hours)
+  xml += '  <Style ss:ID="sCategoryHeader">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#0F382C"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Column Header (Row 6)
+  xml += '  <Style ss:ID="sColHeader">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#064E3B"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2" ss:Color="#064E3B"/>\r\n';
+  xml += '    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#134E4A"/>\r\n';
+  xml += '    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#134E4A"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#FFFFFF"/>\r\n';
+  xml += '   <Interior ss:Color="#0F382C" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Project Summary Row (Emerald tinted banner)
+  xml += '  <Style ss:ID="sProjRow">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#064E3B"/>\r\n';
+  xml += '   <Interior ss:Color="#E6F4EA" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sProjRowCenter">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#064E3B"/>\r\n';
+  xml += '   <Interior ss:Color="#E6F4EA" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sProjRowPct">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#064E3B"/>\r\n';
+  xml += '   <Interior ss:Color="#E6F4EA" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="0.0%"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sProjRowCurrency">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#064E3B"/>\r\n';
+  xml += '   <Interior ss:Color="#E6F4EA" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sProjRowNumber">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#064E3B"/>\r\n';
+  xml += '   <Interior ss:Color="#E6F4EA" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="#,##0"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Alternating task data rows (White)
+  xml += '  <Style ss:ID="sDataWhite">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataWhiteCenter">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataWhitePct">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="0.0%"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataWhiteCurrency">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataWhiteNumber">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="#,##0"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Alternating task data rows (Zebra Tint: #F8FAFC)
+  xml += '  <Style ss:ID="sDataZebra">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataZebraCenter">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataZebraPct">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="0.0%"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataZebraCurrency">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sDataZebraNumber">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="9.5" ss:Color="#334155"/>\r\n';
+  xml += '   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="#,##0"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Grand Total Row (Bold with double bottom underline)
+  xml += '  <Style ss:ID="sGrandTotal">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F382C"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Double" ss:Weight="3" ss:Color="#0F382C"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sGrandTotalCenter">\r\n';
+  xml += '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F382C"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Double" ss:Weight="3" ss:Color="#0F382C"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sGrandTotalCurrency">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F382C"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Double" ss:Weight="3" ss:Color="#0F382C"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += '  <Style ss:ID="sGrandTotalNumber">\r\n';
+  xml += '   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>\r\n';
+  xml += '   <Borders>\r\n';
+  xml += '    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F382C"/>\r\n';
+  xml += '    <Border ss:Position="Bottom" ss:LineStyle="Double" ss:Weight="3" ss:Color="#0F382C"/>\r\n';
+  xml += '   </Borders>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#ECFDF5" ss:Pattern="Solid"/>\r\n';
+  xml += '   <NumberFormat ss:Format="#,##0"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  // Dropdown Reference Styles
+  xml += '  <Style ss:ID="sRefHeader">\r\n';
+  xml += '   <Alignment ss:Vertical="Center"/>\r\n';
+  xml += '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Bold="1" ss:Color="#0F382C"/>\r\n';
+  xml += '   <Interior ss:Color="#E2E8F0" ss:Pattern="Solid"/>\r\n';
+  xml += '  </Style>\r\n';
+
+  xml += ' </Styles>\r\n';
+
+  // Worksheet
+  xml += ' <Worksheet ss:Name="Projects Tracker">\r\n';
+  xml += '  <Table ss:DefaultRowHeight="20">\r\n';
+
+  // Columns definition
+  colWidths.forEach(w => {
+    xml += '   <Column ss:Width="' + w + '"/>\r\n';
+  });
+
+  // Helper function to build a cell
+  const buildCell = (val, styleId, typeOverride) => {
+    if (val === null || val === undefined || val === "") {
+      return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="String">-</Data></Cell>';
+    }
+
+    if (typeOverride === "Number" || typeof val === "number") {
+      return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="Number">' + val + '</Data></Cell>';
+    }
+
+    // Check if numeric string
+    if (typeof val === "string" && val.trim() !== "" && !isNaN(val) && !val.includes("/") && !val.includes("-")) {
+      return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="Number">' + Number(val) + '</Data></Cell>';
+    }
+
+    return '<Cell ss:StyleID="' + styleId + '"><Data ss:Type="String">' + escapeXML(val) + '</Data></Cell>';
+  };
+
+  // Row 1: Title
+  xml += '   <Row ss:Height="28">\r\n';
+  xml += '    <Cell ss:Index="2" ss:MergeAcross="5" ss:StyleID="sTitle"><Data ss:Type="String">Hermit Projects Tracking</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="11" ss:MergeAcross="3" ss:StyleID="sLabel"><Data ss:Type="String">Executive Master Ledger</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+
+  // Row 2: Company & KPI Summary
+  xml += '   <Row ss:Height="22">\r\n';
+  xml += '    <Cell ss:Index="2" ss:StyleID="sLabel"><Data ss:Type="String">Company Name:</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="3" ss:MergeAcross="2" ss:StyleID="sSubtitle"><Data ss:Type="String">Hermit Sustainability Advisory</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="7" ss:StyleID="sLabel"><Data ss:Type="String">Report Date:</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="8" ss:StyleID="Default"><Data ss:Type="String">' + new Date().toLocaleDateString() + '</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="10" ss:StyleID="sLabel"><Data ss:Type="String">Active Mandates:</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="11" ss:StyleID="sProjRowCenter"><Data ss:Type="Number">' + totalProjects + '</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="13" ss:StyleID="sLabel"><Data ss:Type="String">Planned Hours:</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="14" ss:StyleID="sProjRowNumber"><Data ss:Type="Number">' + totalEstHours + '</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+
+  // Row 3: Blank separator
+  xml += '   <Row ss:Height="12"/>\r\n';
+
+  // Row 4: Category Section Header
+  xml += '   <Row ss:Height="22">\r\n';
+  xml += '    <Cell ss:Index="4" ss:MergeAcross="4" ss:StyleID="sCategoryHeader"><Data ss:Type="String">Projects</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="10" ss:MergeAcross="1" ss:StyleID="sCategoryHeader"><Data ss:Type="String">Deliverables</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="12" ss:MergeAcross="2" ss:StyleID="sCategoryHeader"><Data ss:Type="String">Cost / Hours</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+
+  // Row 5: Column Headers
+  const colHeaders = [
+    "",
+    "Status",
+    "Priority",
+    "Proposed Project + Task Titles",
+    "Task Description",
+    "Task Owner",
+    "Start Date",
+    "End Date",
+    "# of Days",
+    "Deliverable",
+    "% Complete",
+    "Fixed Cost",
+    "Est. Hours",
+    "Actual Hours"
+  ];
+  xml += '   <Row ss:Height="26">\r\n';
+  for (let c = 1; c <= 13; c++) {
+    xml += '    <Cell ss:Index="' + (c + 1) + '" ss:StyleID="sColHeader"><Data ss:Type="String">' + escapeXML(colHeaders[c]) + '</Data></Cell>\r\n';
+  }
+  xml += '   </Row>\r\n';
+
+  // Render Data Rows (starting from row index 6 of template, where project rows begin)
+  let zebraCounter = 0;
+  for (let r = 6; r < rows.length; r++) {
+    const row = rows[r];
+    const isPrioRow = Boolean(row[2] && String(row[2]).trim() !== "");
+    const isDropdownSection = Boolean(row[1] && String(row[1]).includes("DROPDOWN"));
+
+    if (isDropdownSection) {
+      break; // Handled separately below
+    }
+
+    // Skip empty spacer rows
+    const hasData = row.slice(1, 14).some(cell => cell !== null && cell !== undefined && String(cell).trim() !== "");
+    if (!hasData) {
+      xml += '   <Row ss:Height="12"/>\r\n';
+      continue;
+    }
+
+    if (isPrioRow) {
+      // Project Banner Row
+      xml += '   <Row ss:Height="24">\r\n';
+      xml += '    ' + buildCell("", "sProjRow") + '\r\n';
+      xml += '    ' + buildCell(row[1], "sProjRowCenter") + '\r\n';
+      xml += '    ' + buildCell(row[2], "sProjRowCenter") + '\r\n';
+      xml += '    ' + buildCell(row[3], "sProjRow") + '\r\n';
+      xml += '    ' + buildCell(row[4], "sProjRow") + '\r\n';
+      xml += '    ' + buildCell(row[5], "sProjRow") + '\r\n';
+      xml += '    ' + buildCell(row[6], "sProjRowCenter") + '\r\n';
+      xml += '    ' + buildCell(row[7], "sProjRowCenter") + '\r\n';
+      xml += '    ' + buildCell(row[8], "sProjRowCenter", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[9], "sProjRow") + '\r\n';
+      xml += '    ' + buildCell(row[10], "sProjRowPct", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[11], "sProjRowCurrency", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[12], "sProjRowNumber", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[13], "sProjRowNumber", "Number") + '\r\n';
+      xml += '   </Row>\r\n';
+      zebraCounter = 0; // reset zebra for tasks
+    } else {
+      // Task Data Row with Zebra Striping
+      const styleBase = (zebraCounter % 2 === 0) ? "sDataWhite" : "sDataZebra";
+      zebraCounter++;
+
+      xml += '   <Row ss:Height="21">\r\n';
+      xml += '    ' + buildCell("", styleBase) + '\r\n';
+      xml += '    ' + buildCell(row[1], styleBase + "Center") + '\r\n';
+      xml += '    ' + buildCell(row[2], styleBase + "Center") + '\r\n';
+      xml += '    ' + buildCell(row[3], styleBase) + '\r\n';
+      xml += '    ' + buildCell(row[4], styleBase) + '\r\n';
+      xml += '    ' + buildCell(row[5], styleBase) + '\r\n';
+      xml += '    ' + buildCell(row[6], styleBase + "Center") + '\r\n';
+      xml += '    ' + buildCell(row[7], styleBase + "Center") + '\r\n';
+      xml += '    ' + buildCell(row[8], styleBase + "Center", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[9], styleBase) + '\r\n';
+      xml += '    ' + buildCell(row[10], styleBase + "Pct", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[11], styleBase + "Currency", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[12], styleBase + "Number", "Number") + '\r\n';
+      xml += '    ' + buildCell(row[13], styleBase + "Number", "Number") + '\r\n';
+      xml += '   </Row>\r\n';
+    }
+  }
+
+  // Grand Total Row at bottom with bold text & double bottom border
+  xml += '   <Row ss:Height="26">\r\n';
+  xml += '    <Cell ss:Index="2" ss:MergeAcross="2" ss:StyleID="sGrandTotalCenter"><Data ss:Type="String">GRAND TOTALS</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="5" ss:MergeAcross="6" ss:StyleID="sGrandTotal"><Data ss:Type="String">' + totalProjects + ' Mandates | ' + totalTasks + ' Deliverables (' + completedTasks + ' Complete, ' + overdueTasks + ' Overdue)</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="12" ss:StyleID="sGrandTotalCurrency"><Data ss:Type="Number">0</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="13" ss:StyleID="sGrandTotalNumber"><Data ss:Type="Number">' + totalEstHours + '</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="14" ss:StyleID="sGrandTotalNumber"><Data ss:Type="Number">' + totalActualHours + '</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+
+  // Spacer
+  xml += '   <Row ss:Height="16"/>\r\n';
+
+  // Dropdown Keys Reference Section
+  xml += '   <Row ss:Height="22">\r\n';
+  xml += '    <Cell ss:Index="2" ss:MergeAcross="2" ss:StyleID="sRefHeader"><Data ss:Type="String">DROPDOWN KEYS REFERENCE</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+  xml += '   <Row ss:Height="20">\r\n';
+  xml += '    <Cell ss:Index="2" ss:StyleID="sColHeader"><Data ss:Type="String">Priority</Data></Cell>\r\n';
+  xml += '    <Cell ss:Index="4" ss:StyleID="sColHeader"><Data ss:Type="String">Status</Data></Cell>\r\n';
+  xml += '   </Row>\r\n';
+
+  const refKeys = [
+    ["High", "Complete"],
+    ["Medium", "In Progress"],
+    ["Low", "Overdue"],
+    ["-", "Not Started"],
+    ["-", "On Hold"],
+    ["-", "Needs Review"],
+    ["-", "Approved"]
+  ];
+
+  refKeys.forEach((k, idx) => {
+    const s = (idx % 2 === 0) ? "sDataWhiteCenter" : "sDataZebraCenter";
+    xml += '   <Row ss:Height="19">\r\n';
+    xml += '    <Cell ss:Index="2" ss:StyleID="' + s + '"><Data ss:Type="String">' + k[0] + '</Data></Cell>\r\n';
+    xml += '    <Cell ss:Index="4" ss:StyleID="' + s + '"><Data ss:Type="String">' + k[1] + '</Data></Cell>\r\n';
+    xml += '   </Row>\r\n';
+  });
+
+  xml += '  </Table>\r\n';
+  xml += ' </Worksheet>\r\n';
+  xml += '</Workbook>';
+
+  // Pure client-side download using application/vnd.ms-excel with .xls extension
+  const blob = new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "Hermit_Projects_Status_Tracker.xls");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+
+        function exportCSV() {
       const escapeCSV = (val) => {
         if (val === null || val === undefined) return "";
         let str = String(val);
