@@ -84,59 +84,67 @@
       backdrop-filter: blur(8px);
     }
 
-    /* ==================== LIGHT THEME OVERRIDES ==================== */
+    /* ==================== MINIMALIST DARK-GREEN LIGHT THEME OVERRIDES ==================== */
     html.light {
       background-color: #f8fafc !important;
-      color: #0f172a !important;
+      color: #064e3b !important; /* Deep forest slate */
     }
 
     html.light body {
       background-color: #f8fafc !important;
-      color: #0f172a !important;
+      color: #064e3b !important;
     }
 
-    /* Sidebar in Light Mode */
+    /* Sidebar in Light Mode - Deep Emerald Minimalist */
     html.light aside {
       background: #ffffff !important;
       border-color: #e2e8f0 !important;
-      box-shadow: 4px 0 20px -4px rgba(0, 0, 0, 0.05);
+      box-shadow: 2px 0 16px -4px rgba(6, 78, 59, 0.06);
     }
     html.light aside .border-b,
     html.light aside .border-t {
-      border-color: #e2e8f0 !important;
+      border-color: #f1f5f9 !important;
     }
     html.light aside button {
-      color: #475569 !important;
+      color: #334155 !important;
     }
     html.light aside button:hover {
-      background: #f1f5f9 !important;
-      color: #0f172a !important;
+      background: #f0fdf4 !important;
+      color: #064e3b !important;
     }
     html.light aside button.active-nav,
     html.light aside button.bg-emerald-500\/10 {
       background: #ecfdf5 !important;
-      color: #047857 !important;
+      color: #065f46 !important;
       border-color: #a7f3d0 !important;
+      font-weight: 600 !important;
     }
     html.light aside .text-white {
-      color: #0f172a !important;
+      color: #064e3b !important;
     }
     html.light aside .text-slate-300 {
-      color: #334155 !important;
+      color: #1e293b !important;
     }
     html.light aside .text-slate-400 {
       color: #64748b !important;
     }
     html.light aside .bg-slate-800 {
-      background-color: #e2e8f0 !important;
-      color: #334155 !important;
+      background-color: #f1f5f9 !important;
+      color: #065f46 !important;
     }
     html.light aside .bg-slate-950\/40 {
       background-color: #f8fafc !important;
     }
     html.light aside .bg-slate-800\/60 {
       background-color: #f1f5f9 !important;
-      color: #475569 !important;
+      color: #065f46 !important;
+    }
+
+    /* Minimalist Sidebar Counter Badge in Light Mode */
+    html.light #nav-crit-badge {
+      background-color: #f1f5f9 !important;
+      color: #0f382c !important;
+      border-color: #cbd5e1 !important;
     }
 
     /* Header & Main in Light Mode */
@@ -144,35 +152,35 @@
       background-color: #f8fafc !important;
     }
     html.light header {
-      background: rgba(255, 255, 255, 0.85) !important;
+      background: rgba(255, 255, 255, 0.95) !important;
       border-color: #e2e8f0 !important;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
     }
     html.light header h1,
     html.light header .text-white {
-      color: #0f172a !important;
+      color: #0f382c !important;
     }
     html.light header .text-slate-400 {
-      color: #64748b !important;
+      color: #475569 !important;
     }
 
-    /* Glass Cards & Containers in Light Mode with Wallpaper */
+    /* Glass Cards & Containers in Light Mode */
     html.light .glass-card {
-      background: rgba(255, 255, 255, 0.92) !important;
-      border-color: rgba(226, 232, 240, 0.9) !important;
-      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+      background: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 16px -2px rgba(6, 78, 59, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
     }
     html.light .glass-card-hover:hover {
-      border-color: #10b981 !important;
-      box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(16, 185, 129, 0.12) !important;
+      border-color: #047857 !important;
+      box-shadow: 0 12px 24px -4px rgba(6, 78, 59, 0.10) !important;
     }
 
-    /* Typography Colors in Light Mode */
+    /* Dark Green Typography & Heading Accents */
     html.light .text-white {
-      color: #0f172a !important;
+      color: #0f382c !important;
     }
     html.light .text-slate-100 {
-      color: #0f172a !important;
+      color: #0f382c !important;
     }
     html.light .text-slate-200 {
       color: #1e293b !important;
@@ -181,10 +189,74 @@
       color: #334155 !important;
     }
     html.light .text-slate-400 {
-      color: #64748b !important;
+      color: #475569 !important;
     }
     html.light .text-slate-500 {
-      color: #94a3b8 !important;
+      color: #64748b !important;
+    }
+
+    /* Unified Dark Green Interactive Elements */
+    html.light .text-emerald-400,
+    html.light .text-emerald-500,
+    html.light .text-emerald-600 {
+      color: #065f46 !important;
+    }
+
+    /* Buttons: Primary Brand Dark Green */
+    html.light .bg-emerald-600 {
+      background-color: #047857 !important;
+      color: #ffffff !important;
+    }
+    html.light .bg-emerald-600:hover {
+      background-color: #065f46 !important;
+    }
+
+    /* Neutralize Harsh Pastel Card Borders & Badges in Critical Path */
+    html.light .border-rose-500\/30,
+    html.light .border-amber-500\/30 {
+      border-color: #e2e8f0 !important;
+    }
+
+    html.light .bg-slate-900\/90 {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    html.light .bg-slate-900\/90:hover {
+      background-color: #f1f5f9 !important;
+    }
+
+    /* Tag badges in Critical Path (Subtle, Clean & Non-Clashing) */
+    html.light .bg-rose-500\/20,
+    html.light .bg-rose-500\/10 {
+      background-color: #f1f5f9 !important;
+      color: #0f382c !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    html.light .bg-amber-500\/20,
+    html.light .bg-amber-500\/10 {
+      background-color: #f1f5f9 !important;
+      color: #0f382c !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+
+    /* Action Buttons inside Cards in Light Mode */
+    html.light .bg-rose-500\/20,
+    html.light .bg-amber-500\/20,
+    html.light .bg-emerald-500\/20 {
+      background-color: #ecfdf5 !important;
+      color: #047857 !important;
+      border-color: #a7f3d0 !important;
+    }
+    html.light .bg-rose-500\/20:hover,
+    html.light .bg-amber-500\/20:hover,
+    html.light .bg-emerald-500\/20:hover {
+      background-color: #047857 !important;
+      color: #ffffff !important;
+    }
+
+    /* Health Status Pills in Light Mode */
+    html.light .inline-flex.rounded-full {
+      border-color: #cbd5e1 !important;
     }
 
     /* Inputs, Selects & Buttons in Light Mode */
@@ -193,31 +265,27 @@
     html.light textarea {
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
-      color: #0f172a !important;
+      color: #0f382c !important;
     }
     html.light input::placeholder {
       color: #94a3b8 !important;
     }
     html.light input:focus,
     html.light select:focus {
-      border-color: #10b981 !important;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15) !important;
+      border-color: #047857 !important;
+      box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.15) !important;
     }
 
     html.light .bg-slate-900 {
       background-color: #ffffff !important;
       border-color: #e2e8f0 !important;
     }
-    html.light .bg-slate-900\/90,
     html.light .bg-slate-900\/60 {
       background-color: #ffffff !important;
     }
-    html.light .bg-slate-950 {
-      background-color: #f8fafc !important;
-    }
     html.light .bg-slate-800 {
       background-color: #f1f5f9 !important;
-      color: #334155 !important;
+      color: #065f46 !important;
     }
     html.light .bg-slate-800\/80,
     html.light .bg-slate-800\/60,
@@ -235,48 +303,49 @@
 
     /* Tables in Light Mode */
     html.light thead {
-      background-color: #f8fafc !important;
-      color: #475569 !important;
+      background-color: #f1f5f9 !important;
+      color: #0f382c !important;
+      font-weight: 700 !important;
     }
     html.light tbody tr:hover {
-      background-color: #f1f5f9 !important;
+      background-color: #f8fafc !important;
     }
     html.light .divide-slate-800,
     html.light .divide-slate-800\/80 {
       border-color: #e2e8f0 !important;
     }
 
-    /* Progress Track Background in Light Mode */
+    /* Unified Dark Green Progress Fill in Light Mode */
     html.light .bg-slate-800.rounded-full {
       background-color: #e2e8f0 !important;
     }
+    html.light .bg-emerald-500.rounded-full {
+      background-color: #047857 !important;
+    }
+
+    /* Auto-Saved Badge in Light Mode */
+    html.light #save-indicator {
+      background-color: #ecfdf5 !important;
+      color: #047857 !important;
+      border-color: #a7f3d0 !important;
+    }
 
     /* Theme Switcher Button Styling */
-    #theme-toggle-btn {
-      background-color: rgba(15, 23, 42, 0.6);
-      border-color: rgba(51, 65, 85, 0.8);
-      color: #f1f5f9;
-    }
-    #theme-toggle-btn:hover {
-      background-color: rgba(30, 41, 59, 0.9);
-      color: #38bdf8;
-      border-color: #38bdf8;
-    }
     html.light #theme-toggle-btn {
       background-color: #ffffff;
       border-color: #cbd5e1;
-      color: #0f172a;
+      color: #0f382c;
     }
     html.light #theme-toggle-btn:hover {
-      background-color: #f1f5f9;
-      color: #0284c7;
-      border-color: #0284c7;
+      background-color: #f0fdf4;
+      color: #047857;
+      border-color: #047857;
     }
 
     /* Scrollbars in Light Mode */
     html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
     html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
-    html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    html.light ::-webkit-scrollbar-thumb:hover { background: #047857; }
 
     /* Modals in Light Mode */
     html.light .modal-backdrop {
@@ -357,13 +426,13 @@
       <div class="pt-4 px-3 py-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">Governance & Risks</div>
 
       <button onclick="setTab('alerts')" id="nav-alerts" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white relative">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i>
+        <i data-lucide="shield-alert" class="w-4 h-4 text-slate-400 group-hover:text-emerald-500"></i>
         <span>Risk & Blockers</span>
         <span class="ml-auto flex items-center justify-center h-5 px-2 text-[11px] font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono" id="nav-crit-badge">3 Critical</span>
       </button>
 
       <button onclick="setTab('funding')" id="nav-funding" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800/80 hover:text-white">
-        <i data-lucide="landmark" class="w-4 h-4 text-amber-400"></i>
+        <i data-lucide="landmark" class="w-4 h-4 text-slate-400 group-hover:text-emerald-500"></i>
         <span>Capital & Partnerships</span>
       </button>
     </nav>
