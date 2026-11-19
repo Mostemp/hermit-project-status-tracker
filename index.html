@@ -97,54 +97,66 @@
 
     /* Sidebar in Light Mode - Deep Emerald Minimalist */
     html.light aside {
-      background: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 2px 0 16px -4px rgba(6, 78, 59, 0.06);
+      background: #047857 !important;
+      border-color: rgba(255,255,255,0.15) !important;
+      box-shadow: 2px 0 16px -4px rgba(0,0,0,0.3);
     }
+    html.light aside .text-white { color: #ffffff !important; }
+    html.light aside .text-slate-100 { color: rgba(255,255,255,0.95) !important; }
+    html.light aside .text-slate-300 { color: rgba(255,255,255,0.85) !important; }
+    html.light aside .text-slate-400 { color: rgba(255,255,255,0.65) !important; }
+    html.light aside .text-slate-500 { color: rgba(255,255,255,0.5) !important; }
+    html.light aside button { color: rgba(255,255,255,0.85) !important; }
+    html.light aside button:hover { background: rgba(255,255,255,0.12) !important; color: #ffffff !important; }
+    html.light aside .text-emerald-400 { color: rgba(255,255,255,0.9) !important; }
+    html.light aside .text-emerald-300 { color: rgba(255,255,255,0.85) !important; }
+    html.light aside .bg-slate-800 { background-color: rgba(255,255,255,0.1) !important; }
+    html.light aside .bg-slate-700 { background-color: rgba(255,255,255,0.15) !important; }
+    html.light aside .border-slate-700, html.light aside .border-slate-800 { border-color: rgba(255,255,255,0.12) !important; }
     html.light aside .border-b,
     html.light aside .border-t {
-      border-color: #f1f5f9 !important;
+      border-color: rgba(255,255,255,0.15) !important;
     }
     html.light aside button {
-      color: #334155 !important;
+      color: rgba(255,255,255,0.85) !important;
     }
     html.light aside button:hover {
-      background: #f0fdf4 !important;
-      color: #064e3b !important;
+      background: rgba(255,255,255,0.12) !important;
+      color: #ffffff !important;
     }
     html.light aside button.active-nav,
     html.light aside button.bg-emerald-500\/10 {
-      background: #ecfdf5 !important;
-      color: #065f46 !important;
-      border-color: #a7f3d0 !important;
+      background: rgba(255,255,255,0.2) !important;
+      color: #ffffff !important;
+      border-color: rgba(255,255,255,0.35) !important;
       font-weight: 600 !important;
     }
     html.light aside .text-white {
-      color: #064e3b !important;
+      color: #ffffff !important;
     }
     html.light aside .text-slate-300 {
-      color: #1e293b !important;
+      color: rgba(255,255,255,0.85) !important;
     }
     html.light aside .text-slate-400 {
-      color: #64748b !important;
+      color: rgba(255,255,255,0.65) !important;
     }
     html.light aside .bg-slate-800 {
-      background-color: #f1f5f9 !important;
-      color: #065f46 !important;
+      background-color: rgba(255,255,255,0.1) !important;
+      color: #ffffff !important;
     }
     html.light aside .bg-slate-950\/40 {
-      background-color: #f8fafc !important;
+      background-color: rgba(0,0,0,0.1) !important;
     }
     html.light aside .bg-slate-800\/60 {
-      background-color: #f1f5f9 !important;
-      color: #065f46 !important;
+      background-color: rgba(255,255,255,0.08) !important;
+      color: rgba(255,255,255,0.85) !important;
     }
 
     /* Minimalist Sidebar Counter Badge in Light Mode */
     html.light #nav-crit-badge {
-      background-color: #f1f5f9 !important;
-      color: #0f382c !important;
-      border-color: #cbd5e1 !important;
+      background-color: rgba(255,255,255,0.2) !important;
+      color: #ffffff !important;
+      border-color: rgba(255,255,255,0.3) !important;
     }
 
     /* Header & Main in Light Mode */
@@ -376,7 +388,7 @@
   <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
 
   <!-- ==================== SIDEBAR ==================== -->
-  <aside id="main-sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900/90 border-r border-slate-800 flex flex-col flex-shrink-0 backdrop-blur-2xl transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 lg:static relative lg:z-20">
+  <aside id="main-sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-emerald-900/95 border-r border-emerald-800 flex flex-col flex-shrink-0 backdrop-blur-2xl transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0 lg:static relative lg:z-20">
     <!-- Brand / Header -->
     <div class="min-h-24 border-b border-slate-800 flex items-center justify-between px-5 py-3.5">
       <div class="flex items-center gap-3.5">
