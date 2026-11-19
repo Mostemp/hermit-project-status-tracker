@@ -18,7 +18,7 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Ambient Solar Installation Wallpaper */
+    /* Crisp, High-Visibility Solar Installation Background (Zero Blur) */
     .app-background-layer {
       position: fixed;
       inset: 0;
@@ -28,25 +28,25 @@
       background-repeat: no-repeat;
       pointer-events: none;
       z-index: 0;
+      filter: none !important;
     }
 
-    /* Dark Mode Atmospheric Solar Overlay */
+    /* Transparent Overlay - No Blur, Maximum Photo Visibility */
     .app-background-overlay {
       position: fixed;
       inset: 0;
-      background: linear-gradient(135deg, rgba(2, 6, 23, 0.90) 0%, rgba(15, 23, 42, 0.88) 50%, rgba(6, 78, 59, 0.75) 100%);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background: transparent;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       pointer-events: none;
       z-index: 0;
-      transition: background 0.3s ease;
     }
 
-    /* Light Mode Atmospheric Solar Overlay */
+    /* Light Mode - Crisp and Fully Visible */
     html.light .app-background-overlay {
-      background: linear-gradient(135deg, rgba(248, 250, 252, 0.88) 0%, rgba(241, 245, 249, 0.82) 50%, rgba(236, 253, 245, 0.75) 100%) !important;
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
     }
 
     .glass-card {
@@ -158,11 +158,9 @@
 
     /* Glass Cards & Containers in Light Mode with Wallpaper */
     html.light .glass-card {
-      background: rgba(255, 255, 255, 0.90) !important;
+      background: rgba(255, 255, 255, 0.92) !important;
       border-color: rgba(226, 232, 240, 0.9) !important;
-      backdrop-filter: blur(12px) !important;
-      -webkit-backdrop-filter: blur(12px) !important;
-      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03) !important;
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
     }
     html.light .glass-card-hover:hover {
       border-color: #10b981 !important;
