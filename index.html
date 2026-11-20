@@ -1076,9 +1076,18 @@
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         try {
-          PORTFOLIO_DATA = JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          // Validate: must be a non-empty array
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            PORTFOLIO_DATA = parsed;
+          } else {
+            // Stale or empty stored data — reset to defaults
+            PORTFOLIO_DATA = JSON.parse(JSON.stringify(INITIAL_PORTFOLIO_DATA));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(PORTFOLIO_DATA));
+          }
         } catch (e) {
           PORTFOLIO_DATA = JSON.parse(JSON.stringify(INITIAL_PORTFOLIO_DATA));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(PORTFOLIO_DATA));
         }
       } else {
         PORTFOLIO_DATA = JSON.parse(JSON.stringify(INITIAL_PORTFOLIO_DATA));
